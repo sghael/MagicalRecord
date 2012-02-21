@@ -28,33 +28,6 @@
 #define MR_USE_ARC __has_feature(objc_arc)
 #endif
 
-#ifndef kCFCoreFoundationVersionNumber_iPhoneOS_5_0
-#define kCFCoreFoundationVersionNumber_iPhoneOS_5_0 674.0
-#endif
-
-#ifndef kCFCoreFoundationVersionNumber_10_7
-#define kCFCoreFoundationVersionNumber_10_7 635.0
-#endif
-
-#if TARGET_OS_IPHONE == 0
-#define MR_MINIMUM_PRIVATE_QUEUE_CF_VERSION kCFCoreFoundationVersionNumber_10_7
-#else
-#define MR_MINIMUM_PRIVATE_QUEUE_CF_VERSION kCFCoreFoundationVersionNumber_iPhoneOS_5_0
-#endif
-
-#define PRIVATE_QUEUES_ENABLED(...) \
-    if (kCFCoreFoundationVersionNumber >= MR_MINIMUM_PRIVATE_QUEUE_CF_VERSION) \
-    { \
-        __VA_ARGS__ \
-    }
-
-#define THREAD_ISOLATION_ENABLED(...) \
-    if (kCFCoreFoundationVersionNumber < MR_MINIMUM_PRIVATE_QUEUE_CF_VERSION) \
-    { \
-        __VA_ARGS__ \
-    }
-
-
 #if MR_USE_ARC
 #define MR_RETAIN(xx)
 #define MR_RELEASE(xx)
