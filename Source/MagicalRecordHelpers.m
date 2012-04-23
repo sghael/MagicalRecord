@@ -42,12 +42,12 @@ void replaceSelectorForTargetWithSourceImpAndSwizzle(Class originalClass, SEL or
 + (NSString *) currentStack
 {
     NSMutableString *status = [NSMutableString stringWithString:@"Current Default Core Data Stack: ---- \n"];
-    
+
     [status appendFormat:@"Context:     %@\n", [NSManagedObjectContext MR_defaultContext]];
     [status appendFormat:@"Model:       %@\n", [[NSManagedObjectModel MR_defaultManagedObjectModel] entityVersionHashesByName]];
     [status appendFormat:@"Coordinator: %@\n", [NSPersistentStoreCoordinator MR_defaultStoreCoordinator]];
     [status appendFormat:@"Store:       %@\n", [NSPersistentStore MR_defaultPersistentStore]];
-    
+
     return status;
 }
 
@@ -85,7 +85,7 @@ void replaceSelectorForTargetWithSourceImpAndSwizzle(Class originalClass, SEL or
 	if (error)
 	{
         // If a custom error handler is set, call that
-        if (errorHandlerTarget != nil && errorHandlerAction != nil) 
+        if (errorHandlerTarget != nil && errorHandlerAction != nil)
 		{
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
@@ -95,7 +95,7 @@ void replaceSelectorForTargetWithSourceImpAndSwizzle(Class originalClass, SEL or
 		else
 		{
 	        // Otherwise, fall back to the default error handling
-	        [self defaultErrorHandler:error];			
+	        [self defaultErrorHandler:error];
 		}
     }
 }
@@ -141,7 +141,7 @@ void replaceSelectorForTargetWithSourceImpAndSwizzle(Class originalClass, SEL or
     {
         defaultName = kMagicalRecordDefaultStoreFileName;
     }
-    if (![defaultName hasSuffix:@"sqlite"]) 
+    if (![defaultName hasSuffix:@"sqlite"])
     {
         defaultName = [defaultName stringByAppendingPathExtension:@"sqlite"];
     }
@@ -164,7 +164,7 @@ void replaceSelectorForTargetWithSourceImpAndSwizzle(Class originalClass, SEL or
 {
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator MR_coordinatorWithSqliteStoreNamed:storeName];
 	[NSPersistentStoreCoordinator MR_setDefaultStoreCoordinator:coordinator];
-	
+
 	NSManagedObjectContext *context = [NSManagedObjectContext MR_contextWithStoreCoordinator:coordinator];
 	[NSManagedObjectContext MR_setDefaultContext:context];
 }
@@ -173,7 +173,7 @@ void replaceSelectorForTargetWithSourceImpAndSwizzle(Class originalClass, SEL or
 {
     NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator MR_coordinatorWithAutoMigratingSqliteStoreNamed:storeName];
     [NSPersistentStoreCoordinator MR_setDefaultStoreCoordinator:coordinator];
-    
+
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextWithStoreCoordinator:coordinator];
     [NSManagedObjectContext MR_setDefaultContext:context];
 }
@@ -182,7 +182,7 @@ void replaceSelectorForTargetWithSourceImpAndSwizzle(Class originalClass, SEL or
 {
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator MR_coordinatorWithInMemoryStore];
 	[NSPersistentStoreCoordinator MR_setDefaultStoreCoordinator:coordinator];
-	
+
 	NSManagedObjectContext *context = [NSManagedObjectContext MR_contextWithStoreCoordinator:coordinator];
 	[NSManagedObjectContext MR_setDefaultContext:context];
 }
@@ -191,8 +191,9 @@ void replaceSelectorForTargetWithSourceImpAndSwizzle(Class originalClass, SEL or
 
 + (BOOL) isICloudEnabled;
 {
-    NSURL *cloudURL = [NSPersistentStore MR_cloudURLForUbiqutiousContainer:nil];
-    return cloudURL != nil;
+    // NSURL *cloudURL = [NSPersistentStore MR_cloudURLForUbiqutiousContainer:nil];
+    // return cloudURL != nil;
+    return NO;
 }
 
 + (void) setupCoreDataStackWithiCloudContainer:(NSString *)icloudBucket localStoreNamed:(NSString *)localStore;
@@ -209,12 +210,12 @@ void replaceSelectorForTargetWithSourceImpAndSwizzle(Class originalClass, SEL or
 + (void) setupCoreDataStackWithiCloudContainer:(NSString *)containerID contentNameKey:(NSString *)contentNameKey localStoreNamed:(NSString *)localStoreName cloudStorePathComponent:(NSString *)pathSubcomponent completion:(void(^)(void))completion;
 {
     NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator MR_coordinatorWithiCloudContainerID:containerID
-                                                                                                   contentNameKey:contentNameKey 
-                                                                                                  localStoreNamed:localStoreName 
+                                                                                                   contentNameKey:contentNameKey
+                                                                                                  localStoreNamed:localStoreName
                                                                                           cloudStorePathComponent:pathSubcomponent
                                                                                                        completion:completion];
     [NSPersistentStoreCoordinator MR_setDefaultStoreCoordinator:coordinator];
-    
+
     NSManagedObjectContext *context = [NSManagedObjectContext MR_contextWithStoreCoordinator:coordinator];
     [NSManagedObjectContext MR_setDefaultContext:context];
 }
@@ -273,7 +274,7 @@ void replaceSelectorForTargetWithSourceImpAndSwizzle(Class originalClass, SEL or
 + (BOOL) MR_resolveClassMethod:(SEL)originalSelector
 {
     BOOL resolvedClassMethod = [self MR_resolveClassMethod:originalSelector];
-    if (!resolvedClassMethod) 
+    if (!resolvedClassMethod)
     {
         resolvedClassMethod = addMagicalRecordShortHandMethodToPrefixedClassMethod(self, originalSelector);
     }
@@ -283,7 +284,7 @@ void replaceSelectorForTargetWithSourceImpAndSwizzle(Class originalClass, SEL or
 + (BOOL) MR_resolveInstanceMethod:(SEL)originalSelector
 {
     BOOL resolvedClassMethod = [self MR_resolveInstanceMethod:originalSelector];
-    if (!resolvedClassMethod) 
+    if (!resolvedClassMethod)
     {
         resolvedClassMethod = addMagicalRecordShorthandMethodToPrefixedInstanceMethod(self, originalSelector);
     }
@@ -294,23 +295,23 @@ void replaceSelectorForTargetWithSourceImpAndSwizzle(Class originalClass, SEL or
 + (void) updateResolveMethodsForClass:(Class)klass
 {
     replaceSelectorForTargetWithSourceImpAndSwizzle(self, @selector(MR_resolveClassMethod:), klass, @selector(resolveClassMethod:));
-    replaceSelectorForTargetWithSourceImpAndSwizzle(self, @selector(MR_resolveInstanceMethod:), klass, @selector(resolveInstanceMethod:));    
+    replaceSelectorForTargetWithSourceImpAndSwizzle(self, @selector(MR_resolveInstanceMethod:), klass, @selector(resolveInstanceMethod:));
 }
 
 + (void) swizzleShorthandMethods;
 {
     if (methodsHaveBeenSwizzled) return;
-    
+
     NSArray *classes = [NSArray arrayWithObjects:
                         [NSManagedObject class],
-                        [NSManagedObjectContext class], 
-                        [NSManagedObjectModel class], 
-                        [NSPersistentStore class], 
+                        [NSManagedObjectContext class],
+                        [NSManagedObjectModel class],
+                        [NSPersistentStore class],
                         [NSPersistentStoreCoordinator class], nil];
-    
+
     [classes enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         Class klass = (Class)obj;
-        
+
         [self updateResolveMethodsForClass:klass];
     }];
     methodsHaveBeenSwizzled = YES;
@@ -321,7 +322,7 @@ void replaceSelectorForTargetWithSourceImpAndSwizzle(Class originalClass, SEL or
 
 + (void) initialize;
 {
-    if (self == [MagicalRecordHelpers class]) 
+    if (self == [MagicalRecordHelpers class])
     {
 #ifdef MR_SHORTHAND
         [self swizzleShorthandMethods];
@@ -341,15 +342,15 @@ void replaceSelectorForTargetWithSourceImpAndSwizzle(Class sourceClass, SEL sour
     Method targetClassMethod = class_getClassMethod(targetClass, targetSelector);
 
     Class targetMetaClass = objc_getMetaClass([NSStringFromClass(targetClass) cStringUsingEncoding:NSUTF8StringEncoding]);
-    
+
     BOOL methodWasAdded = class_addMethod(targetMetaClass, sourceSelector,
                                           method_getImplementation(targetClassMethod),
                                           method_getTypeEncoding(targetClassMethod));
-    
+
     if (methodWasAdded)
     {
-        class_replaceMethod(targetMetaClass, targetSelector, 
-                            method_getImplementation(sourceClassMethod), 
+        class_replaceMethod(targetMetaClass, targetSelector,
+                            method_getImplementation(sourceClassMethod),
                             method_getTypeEncoding(sourceClassMethod));
     }
 }
@@ -358,42 +359,42 @@ BOOL addMagicalRecordShorthandMethodToPrefixedInstanceMethod(Class klass, SEL or
 {
     NSString *originalSelectorString = NSStringFromSelector(originalSelector);
     if ([originalSelectorString hasPrefix:@"_"] || [originalSelectorString hasPrefix:@"init"]) return NO;
-    
-    if (![originalSelectorString hasPrefix:kMagicalRecordCategoryPrefix]) 
+
+    if (![originalSelectorString hasPrefix:kMagicalRecordCategoryPrefix])
     {
         NSString *prefixedSelector = [kMagicalRecordCategoryPrefix stringByAppendingString:originalSelectorString];
         Method existingMethod = class_getInstanceMethod(klass, NSSelectorFromString(prefixedSelector));
-        
-        if (existingMethod) 
+
+        if (existingMethod)
         {
-            BOOL methodWasAdded = class_addMethod(klass, 
-                                                  originalSelector, 
-                                                  method_getImplementation(existingMethod), 
+            BOOL methodWasAdded = class_addMethod(klass,
+                                                  originalSelector,
+                                                  method_getImplementation(existingMethod),
                                                   method_getTypeEncoding(existingMethod));
-            
+
             return methodWasAdded;
         }
     }
     return NO;
 }
-                                    
+
 
 BOOL addMagicalRecordShortHandMethodToPrefixedClassMethod(Class klass, SEL originalSelector)
 {
     NSString *originalSelectorString = NSStringFromSelector(originalSelector);
-    if (![originalSelectorString hasPrefix:kMagicalRecordCategoryPrefix]) 
+    if (![originalSelectorString hasPrefix:kMagicalRecordCategoryPrefix])
     {
         NSString *prefixedSelector = [kMagicalRecordCategoryPrefix stringByAppendingString:originalSelectorString];
         Method existingMethod = class_getClassMethod(klass, NSSelectorFromString(prefixedSelector));
-        
-        if (existingMethod) 
+
+        if (existingMethod)
         {
             Class metaClass = objc_getMetaClass([NSStringFromClass(klass) cStringUsingEncoding:NSUTF8StringEncoding]);
-            BOOL methodWasAdded = class_addMethod(metaClass, 
-                                                  originalSelector, 
-                                                  method_getImplementation(existingMethod), 
+            BOOL methodWasAdded = class_addMethod(metaClass,
+                                                  originalSelector,
+                                                  method_getImplementation(existingMethod),
                                                   method_getTypeEncoding(existingMethod));
-            
+
             return methodWasAdded;
         }
     }
@@ -428,7 +429,7 @@ NSDate * dateFromString(NSString *value, NSString *format)
     [formatter setTimeZone:[NSTimeZone localTimeZone]];
     [formatter setLocale:[NSLocale currentLocale]];
     [formatter setDateFormat:format];
-    
+
     NSDate *parsedDate = [formatter dateFromString:value];
     MR_AUTORELEASE(formatter);
 
@@ -441,14 +442,14 @@ NSInteger* newColorComponentsFromString(NSString *serializedColor)
     NSScanner *colorScanner = [NSScanner scannerWithString:serializedColor];
     NSString *colorType;
     [colorScanner scanUpToString:@"(" intoString:&colorType];
-    
+
     NSInteger *componentValues = malloc(4 * sizeof(NSInteger));
     if ([colorType hasPrefix:@"rgba"])
     {
         NSCharacterSet *rgbaCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"(,)"];
 
         NSInteger *componentValue = componentValues;
-        while (![colorScanner isAtEnd]) 
+        while (![colorScanner isAtEnd])
         {
             [colorScanner scanCharactersFromSet:rgbaCharacterSet intoString:nil];
             [colorScanner scanInteger:componentValue];
@@ -469,7 +470,7 @@ UIColor * UIColorFromString(NSString *serializedColor)
                                      green:(componentValues[1] / 255.)
                                       blue:(componentValues[2] / 255.)
                                      alpha:componentValues[3]];
-    
+
     free(componentValues);
     return color;
 }
