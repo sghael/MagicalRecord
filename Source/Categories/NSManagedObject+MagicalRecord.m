@@ -26,14 +26,14 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 + (NSArray *) MR_executeFetchRequest:(NSFetchRequest *)request inContext:(NSManagedObjectContext *)context
 {
 	NSError *error = nil;
-	
+
 	NSArray *results = [context executeFetchRequest:request error:&error];
-    
-    if (results == nil) 
+
+    if (results == nil)
     {
         [MagicalRecordHelpers handleErrors:error];
     }
-	return results;	
+	return results;
 }
 
 + (NSArray *) MR_executeFetchRequest:(NSFetchRequest *)request
@@ -44,7 +44,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 + (id) MR_executeFetchRequestAndReturnFirstObject:(NSFetchRequest *)request inContext:(NSManagedObjectContext *)context
 {
 	[request setFetchLimit:1];
-	
+
 	NSArray *results = [self MR_executeFetchRequest:request inContext:context];
 	if ([results count] == 0)
 	{
@@ -78,7 +78,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
 + (NSEntityDescription *) MR_entityDescriptionInContext:(NSManagedObjectContext *)context
 {
-    if ([self respondsToSelector:@selector(entityInManagedObjectContext:)]) 
+    if ([self respondsToSelector:@selector(entityInManagedObjectContext:)])
     {
         NSEntityDescription *entity = [self performSelector:@selector(entityInManagedObjectContext:) withObject:context];
         return entity;
@@ -99,11 +99,11 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 {
 	NSEntityDescription *description = [self MR_entityDescription];
 	NSMutableArray *propertiesWanted = [NSMutableArray array];
-	
+
 	if (properties)
 	{
 		NSDictionary *propDict = [description propertiesByName];
-		
+
 		for (NSString *propertyName in properties)
 		{
 			NSPropertyDescription *property = [propDict objectForKey:propertyName];
@@ -113,7 +113,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 			}
 			else
 			{
-				MRLog(@"Property '%@' not found in %d properties for %@", propertyName, [propDict count], NSStringFromClass(self));
+        MRLog(@"Property '%@' not found in %lx properties for %@", propertyName, (unsigned long)[propDict count], NSStringFromClass(self));
 			}
 		}
 	}
@@ -123,14 +123,14 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 + (NSArray *) MR_sortAscending:(BOOL)ascending attributes:(NSArray *)attributesToSortBy
 {
 	NSMutableArray *attributes = [NSMutableArray array];
-    
-    for (NSString *attributeName in attributesToSortBy) 
+
+    for (NSString *attributeName in attributesToSortBy)
     {
         NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:attributeName ascending:ascending];
         [attributes addObject:sortDescriptor];
         MR_RELEASE(sortDescriptor);
     }
-    
+
 	return attributes;
 }
 
@@ -173,7 +173,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
 + (NSNumber *) MR_numberOfEntitiesWithPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context
 {
-    
+
 	return [NSNumber numberWithUnsignedInteger:[self MR_countOfEntitiesWithPredicate:searchTerm inContext:context]];
 }
 
@@ -193,7 +193,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 	NSError *error = nil;
 	NSUInteger count = [context countForFetchRequest:[self MR_createFetchRequestInContext:context] error:&error];
 	[MagicalRecordHelpers handleErrors:error];
-	
+
     return count;
 }
 
@@ -207,10 +207,10 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 	NSError *error = nil;
 	NSFetchRequest *request = [self MR_createFetchRequestInContext:context];
 	[request setPredicate:searchFilter];
-	
+
 	NSUInteger count = [context countForFetchRequest:request error:&error];
 	[MagicalRecordHelpers handleErrors:error];
- 
+
     return count;
 }
 
@@ -245,7 +245,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 {
     NSFetchRequest *request = [self MR_createFetchRequestInContext:context];
     [request setPredicate:searchTerm];
-    
+
     return request;
 }
 
@@ -272,7 +272,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
     NSFetchRequest *request = [self MR_createFetchRequestInContext:context];
     [request setPredicate:searchTerm];
     [request setFetchLimit:1];
-    
+
     return request;
 }
 
@@ -283,20 +283,20 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
 + (NSFetchRequest *) MR_requestFirstByAttribute:(NSString *)attribute withValue:(id)searchValue inContext:(NSManagedObjectContext *)context;
 {
-    NSFetchRequest *request = [self MR_requestAllWhere:attribute isEqualTo:searchValue inContext:context]; 
+    NSFetchRequest *request = [self MR_requestAllWhere:attribute isEqualTo:searchValue inContext:context];
     [request setFetchLimit:1];
-    
+
     return request;
 }
 
 + (NSFetchRequest *) MR_requestAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context
 {
 	NSFetchRequest *request = [self MR_requestAllInContext:context];
-	
+
 	NSSortDescriptor *sortBy = [[NSSortDescriptor alloc] initWithKey:sortTerm ascending:ascending];
 	[request setSortDescriptors:[NSArray arrayWithObject:sortBy]];
     MR_AUTORELEASE(sortBy);
-	
+
 	return request;
 }
 
@@ -312,19 +312,19 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 	NSFetchRequest *request = [self MR_requestAllInContext:context];
 	[request setPredicate:searchTerm];
 	[request setFetchBatchSize:[self MR_defaultBatchSize]];
-	
+
     NSMutableArray* sortDescriptors = [[NSMutableArray alloc] init];
     NSArray* sortKeys = [sortTerm componentsSeparatedByString:@","];
-    for (NSString* sortKey in sortKeys) 
+    for (NSString* sortKey in sortKeys)
     {
         NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:sortKey ascending:ascending];
         [sortDescriptors addObject:sortDescriptor];
         MR_AUTORELEASE(sortDescriptor);
     }
-    
+
 	[request setSortDescriptors:sortDescriptors];
     MR_AUTORELEASE(sortDescriptors);
-    
+
 	return request;
 }
 
@@ -332,7 +332,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 {
 	NSFetchRequest *request = [self MR_requestAllSortedBy:sortTerm
 											 ascending:ascending
-										 withPredicate:searchTerm 
+										 withPredicate:searchTerm
 											 inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
 	return request;
 }
@@ -354,14 +354,14 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 + (NSArray *) MR_findAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context
 {
 	NSFetchRequest *request = [self MR_requestAllSortedBy:sortTerm ascending:ascending inContext:context];
-	
+
 	return [self MR_executeFetchRequest:request inContext:context];
 }
 
 + (NSArray *) MR_findAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending
 {
 	return [self MR_findAllSortedBy:sortTerm
-					   ascending:ascending 
+					   ascending:ascending
 					   inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
 }
 
@@ -371,7 +371,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 											 ascending:ascending
 										 withPredicate:searchTerm
 											 inContext:context];
-	
+
 	return [self MR_executeFetchRequest:request inContext:context];
 }
 
@@ -379,7 +379,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 {
 	return [self MR_findAllSortedBy:sortTerm
 					   ascending:ascending
-				   withPredicate:searchTerm 
+				   withPredicate:searchTerm
 					   inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
 }
 
@@ -391,7 +391,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 + (NSFetchedResultsController *) MR_fetchController:(NSFetchRequest *)request delegate:(id<NSFetchedResultsControllerDelegate>)delegate useFileCache:(BOOL)useFileCache groupedBy:(NSString *)groupKeyPath inContext:(NSManagedObjectContext *)context
 {
     NSString *cacheName = useFileCache ? [NSString stringWithFormat:@"MagicalRecord-Cache-%@", NSStringFromClass([self class])] : nil;
-    
+
 	NSFetchedResultsController *controller =
     [[NSFetchedResultsController alloc] initWithFetchRequest:request
                                         managedObjectContext:context
@@ -399,23 +399,23 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
                                                    cacheName:cacheName];
     controller.delegate = delegate;
     MR_AUTORELEASE(controller);
-    
+
     return controller;
 }
 
 + (NSFetchedResultsController *) MR_fetchAllGroupedBy:(NSString *)group withPredicate:(NSPredicate *)searchTerm sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending delegate:(id<NSFetchedResultsControllerDelegate>)delegate inContext:(NSManagedObjectContext *)context
 {
-	NSFetchRequest *request = [self MR_requestAllSortedBy:sortTerm 
-                                                ascending:ascending 
+	NSFetchRequest *request = [self MR_requestAllSortedBy:sortTerm
+                                                ascending:ascending
                                             withPredicate:searchTerm
                                                 inContext:context];
 
-    NSFetchedResultsController *controller = [self MR_fetchController:request 
+    NSFetchedResultsController *controller = [self MR_fetchController:request
                                                              delegate:delegate
                                                          useFileCache:NO
                                                             groupedBy:group
                                                             inContext:context];
-    
+
     [self MR_performFetch:controller];
     return controller;
 }
@@ -432,7 +432,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
 + (NSFetchedResultsController *) MR_fetchAllGroupedBy:(NSString *)group withPredicate:(NSPredicate *)searchTerm sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context;
 {
-    return [self MR_fetchAllGroupedBy:group 
+    return [self MR_fetchAllGroupedBy:group
                         withPredicate:searchTerm
                              sortedBy:sortTerm
                             ascending:ascending
@@ -440,9 +440,9 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
                             inContext:context];
 }
 
-+ (NSFetchedResultsController *) MR_fetchAllGroupedBy:(NSString *)group withPredicate:(NSPredicate *)searchTerm sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending 
++ (NSFetchedResultsController *) MR_fetchAllGroupedBy:(NSString *)group withPredicate:(NSPredicate *)searchTerm sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending
 {
-    return [self MR_fetchAllGroupedBy:group 
+    return [self MR_fetchAllGroupedBy:group
                         withPredicate:searchTerm
                              sortedBy:sortTerm
                             ascending:ascending
@@ -457,12 +457,12 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
                                             withPredicate:searchTerm
                                                 inContext:context];
 
-	NSFetchedResultsController *controller = [self MR_fetchController:request 
+	NSFetchedResultsController *controller = [self MR_fetchController:request
                                                                delegate:nil
                                                            useFileCache:NO
                                                               groupedBy:groupingKeyPath
                                                               inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
-    
+
     [self MR_performFetch:controller];
     return controller;
 }
@@ -478,23 +478,23 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
 + (NSFetchedResultsController *) MR_fetchAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm groupBy:(NSString *)groupingKeyPath delegate:(id<NSFetchedResultsControllerDelegate>)delegate inContext:(NSManagedObjectContext *)context
 {
-	NSFetchedResultsController *controller = [self MR_fetchAllGroupedBy:groupingKeyPath 
+	NSFetchedResultsController *controller = [self MR_fetchAllGroupedBy:groupingKeyPath
 															  withPredicate:searchTerm
-																   sortedBy:sortTerm 
+																   sortedBy:sortTerm
 																  ascending:ascending
                                                                    delegate:delegate
 																  inContext:context];
-	
+
 	[self MR_performFetch:controller];
 	return controller;
 }
 
 + (NSFetchedResultsController *) MR_fetchAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm groupBy:(NSString *)groupingKeyPath delegate:(id<NSFetchedResultsControllerDelegate>)delegate
 {
-	return [self MR_fetchAllSortedBy:sortTerm 
+	return [self MR_fetchAllSortedBy:sortTerm
 						ascending:ascending
-					withPredicate:searchTerm 
-						  groupBy:groupingKeyPath 
+					withPredicate:searchTerm
+						  groupBy:groupingKeyPath
                          delegate:delegate
 						inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
 }
@@ -507,7 +507,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 {
 	NSFetchRequest *request = [self MR_createFetchRequestInContext:context];
 	[request setPredicate:searchTerm];
-	
+
 	return [self MR_executeFetchRequest:request
 						   inContext:context];
 }
@@ -521,7 +521,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 + (id) MR_findFirstInContext:(NSManagedObjectContext *)context
 {
 	NSFetchRequest *request = [self MR_createFetchRequestInContext:context];
-	
+
 	return [self MR_executeFetchRequestAndReturnFirstObject:request inContext:context];
 }
 
@@ -531,17 +531,17 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 }
 
 + (id) MR_findFirstByAttribute:(NSString *)attribute withValue:(id)searchValue inContext:(NSManagedObjectContext *)context
-{	
+{
 	NSFetchRequest *request = [self MR_requestFirstByAttribute:attribute withValue:searchValue inContext:context];
     //    [request setPropertiesToFetch:[NSArray arrayWithObject:attribute]];
-    
+
 	return [self MR_executeFetchRequestAndReturnFirstObject:request inContext:context];
 }
 
 + (id) MR_findFirstByAttribute:(NSString *)attribute withValue:(id)searchValue
 {
 	return [self MR_findFirstByAttribute:attribute
-							withValue:searchValue 
+							withValue:searchValue
 							inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
 }
 
@@ -553,7 +553,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 + (id) MR_findFirstWithPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context
 {
     NSFetchRequest *request = [self MR_requestFirstWithPredicate:searchTerm inContext:context];
-    
+
     return [self MR_executeFetchRequestAndReturnFirstObject:request inContext:context];
 }
 
@@ -567,8 +567,8 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 + (id) MR_findFirstWithPredicate:(NSPredicate *)searchterm sortedBy:(NSString *)property ascending:(BOOL)ascending
 {
 	return [self MR_findFirstWithPredicate:searchterm
-							   sortedBy:property 
-							  ascending:ascending 
+							   sortedBy:property
+							  ascending:ascending
 							  inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
 }
 
@@ -577,14 +577,14 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 	NSFetchRequest *request = [self MR_createFetchRequestInContext:context];
 	[request setPredicate:searchTerm];
 	[request setPropertiesToFetch:attributes];
-	
+
 	return [self MR_executeFetchRequestAndReturnFirstObject:request inContext:context];
 }
 
 + (id) MR_findFirstWithPredicate:(NSPredicate *)searchTerm andRetrieveAttributes:(NSArray *)attributes
 {
 	return [self MR_findFirstWithPredicate:searchTerm
-				  andRetrieveAttributes:attributes 
+				  andRetrieveAttributes:attributes
 							  inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
 }
 
@@ -596,15 +596,15 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 										 withPredicate:searchTerm
 											 inContext:context];
 	[request setPropertiesToFetch:[self MR_propertiesNamed:attributes]];
-	
+
 	return [self MR_executeFetchRequestAndReturnFirstObject:request inContext:context];
 }
 
 + (id) MR_findFirstWithPredicate:(NSPredicate *)searchTerm sortedBy:(NSString *)sortBy ascending:(BOOL)ascending andRetrieveAttributes:(id)attributes, ...
 {
 	return [self MR_findFirstWithPredicate:searchTerm
-							   sortedBy:sortBy 
-							  ascending:ascending 
+							   sortedBy:sortBy
+							  ascending:ascending
 								inContext:[NSManagedObjectContext MR_contextForCurrentThread]
 				  andRetrieveAttributes:attributes];
 }
@@ -612,14 +612,14 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 + (NSArray *) MR_findByAttribute:(NSString *)attribute withValue:(id)searchValue inContext:(NSManagedObjectContext *)context
 {
     NSFetchRequest *request = [self MR_requestAllWhere:attribute isEqualTo:searchValue inContext:context];
-	
+
 	return [self MR_executeFetchRequest:request inContext:context];
 }
 
 + (NSArray *) MR_findByAttribute:(NSString *)attribute withValue:(id)searchValue
 {
 	return [self MR_findByAttribute:attribute
-					   withValue:searchValue 
+					   withValue:searchValue
 					   inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
 }
 
@@ -627,7 +627,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 {
 	NSPredicate *searchTerm = [NSPredicate predicateWithFormat:@"%K = %@", attribute, searchValue];
 	NSFetchRequest *request = [self MR_requestAllSortedBy:sortTerm ascending:ascending withPredicate:searchTerm inContext:context];
-	
+
 	return [self MR_executeFetchRequest:request];
 }
 
@@ -635,14 +635,14 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 {
 	return [self MR_findByAttribute:attribute
 					   withValue:searchValue
-					  andOrderBy:sortTerm 
-					   ascending:ascending 
+					  andOrderBy:sortTerm
+					   ascending:ascending
 					   inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
 }
 
 + (id) MR_createInContext:(NSManagedObjectContext *)context
 {
-    if ([self respondsToSelector:@selector(insertInManagedObjectContext:)]) 
+    if ([self respondsToSelector:@selector(insertInManagedObjectContext:)])
     {
         id entity = [self performSelector:@selector(insertInManagedObjectContext:) withObject:context];
         return entity;
@@ -654,7 +654,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 }
 
 + (id) MR_createEntity
-{	
+{
 	NSManagedObject *newEntity = [self MR_createInContext:[NSManagedObjectContext MR_contextForCurrentThread]];
 
 	return newEntity;
@@ -677,14 +677,14 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
     NSFetchRequest *request = [self MR_requestAllWithPredicate:predicate inContext:context];
     [request setReturnsObjectsAsFaults:YES];
 	[request setIncludesPropertyValues:NO];
-    
+
 	NSArray *objectsToTruncate = [self MR_executeFetchRequest:request inContext:context];
-    
-	for (id objectToTruncate in objectsToTruncate) 
+
+	for (id objectToTruncate in objectsToTruncate)
     {
 		[objectToTruncate MR_deleteInContext:context];
 	}
-    
+
 	return YES;
 }
 
@@ -713,17 +713,17 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 {
 	NSManagedObject *obj = [[self class] MR_findFirstByAttribute:property
 													withValue:[NSString stringWithFormat:@"max(%@)", property]];
-	
+
 	return [obj valueForKey:property];
 }
 
 - (id) MR_objectWithMinValueFor:(NSString *)property inContext:(NSManagedObjectContext *)context
 {
 	NSFetchRequest *request = [[self class] MR_createFetchRequestInContext:context];
-							   
+
 	NSPredicate *searchFor = [NSPredicate predicateWithFormat:@"SELF = %@ AND %K = min(%@)", self, property, property];
 	[request setPredicate:searchFor];
-	
+
 	return [[self class] MR_executeFetchRequestAndReturnFirstObject:request inContext:context];
 }
 
@@ -732,37 +732,37 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 	return [self MR_objectWithMinValueFor:property inContext:[self  managedObjectContext]];
 }
 
-+ (NSNumber *) MR_aggregateOperation:(NSString *)function onAttribute:(NSString *)attributeName withPredicate:(NSPredicate *)predicate inContext:(NSManagedObjectContext *)context 
++ (NSNumber *) MR_aggregateOperation:(NSString *)function onAttribute:(NSString *)attributeName withPredicate:(NSPredicate *)predicate inContext:(NSManagedObjectContext *)context
 {
-    NSExpression *ex = [NSExpression expressionForFunction:function 
+    NSExpression *ex = [NSExpression expressionForFunction:function
                                                  arguments:[NSArray arrayWithObject:[NSExpression expressionForKeyPath:attributeName]]];
-    
+
     NSExpressionDescription *ed = [[NSExpressionDescription alloc] init];
     [ed setName:@"result"];
     [ed setExpression:ex];
-    
-    // determine the type of attribute, required to set the expression return type    
+
+    // determine the type of attribute, required to set the expression return type
     NSAttributeDescription *attributeDescription = [[[self MR_entityDescription] attributesByName] objectForKey:attributeName];
-    [ed setExpressionResultType:[attributeDescription attributeType]];    
+    [ed setExpressionResultType:[attributeDescription attributeType]];
     NSArray *properties = [NSArray arrayWithObject:ed];
     MR_RELEASE(ed);
-    
+
     NSFetchRequest *request = [self MR_requestAllWithPredicate:predicate inContext:context];
     [request setPropertiesToFetch:properties];
-    [request setResultType:NSDictionaryResultType];    
-    
+    [request setResultType:NSDictionaryResultType];
+
     NSDictionary *resultsDictionary = [self MR_executeFetchRequestAndReturnFirstObject:request];
     NSNumber *resultValue = [resultsDictionary objectForKey:@"result"];
-    
-    return resultValue;    
+
+    return resultValue;
 }
 
-+ (NSNumber *) MR_aggregateOperation:(NSString *)function onAttribute:(NSString *)attributeName withPredicate:(NSPredicate *)predicate 
++ (NSNumber *) MR_aggregateOperation:(NSString *)function onAttribute:(NSString *)attributeName withPredicate:(NSPredicate *)predicate
 {
-    return [self MR_aggregateOperation:function 
-                        onAttribute:attributeName 
+    return [self MR_aggregateOperation:function
+                        onAttribute:attributeName
                       withPredicate:predicate
-                          inContext:[NSManagedObjectContext MR_defaultContext]];    
+                          inContext:[NSManagedObjectContext MR_defaultContext]];
 }
 
 - (id) MR_inContext:(NSManagedObjectContext *)otherContext
@@ -770,7 +770,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
     NSError *error = nil;
     NSManagedObject *inContext = [otherContext existingObjectWithID:[self objectID] error:&error];
     [MagicalRecordHelpers handleErrors:error];
-    
+
     return inContext;
 }
 
